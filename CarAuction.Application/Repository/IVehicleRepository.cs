@@ -2,9 +2,9 @@
 
 namespace CarAuction.Application.Repository
 {
-    internal interface IVehicleRepository
+    public interface IVehicleRepository
     {
-        Task<bool> CreateAsync(Vehicle vehicle);
+        Task<bool> CreateVehicle(Vehicle vehicle);
 
         Task<IEnumerable<Vehicle>> GetVehiclesByType(string type);
 
@@ -13,5 +13,7 @@ namespace CarAuction.Application.Repository
         Task<IEnumerable<Vehicle>> GetVehiclesByModel(string manufacturer);
 
         Task<IEnumerable<Vehicle>> GetVehiclesByYear(int year);
+
+        Task<Vehicle?> GetVehiclesById(Guid id);
     }
 }

@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CarAuction.Application\CarAuction.Application.csproj" />
+    <ProjectReference Include="..\CarAuction\CarAuction.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

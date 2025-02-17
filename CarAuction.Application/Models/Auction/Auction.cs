@@ -2,16 +2,14 @@
 {
     public class Auction
     {
-        public int Id { get; set; }
+        public Guid Id { get; init; }
 
-        public int CarId { get; set; }
-
-        public int UserId { get; set; }
+        public Guid CarId { get; init; }
 
         public double CurrentBid { get; set; }
 
         public DateTime EndDate { get; set; }
 
-        public bool IsOpen { get; set; }
+        public bool isActive { get; set; } = true;
     }
 }

@@ -2,9 +2,9 @@
 {
     public class Vehicle
     {
-        public required int Id { get; set; }
+        public required Guid Id { get; init; }
 
-        public required string Type { get; set; }
+        public required string Type { get; set; } = string.Empty;
 
         public required string Manufacturer { get; set; } = string.Empty;
 

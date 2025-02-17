@@ -1,15 +1,18 @@
 ﻿using CarAuction.Models.Auction;
+using CarAuction.Models.Vehicle;
 
 namespace CarAuction.Application.Repository
 {
-    internal interface IAuctionRepository
+    public interface IAuctionRepository
     {
-        Task<bool> CreateAuction(Auction auction);
+        Task<bool> CreateAuction(Vehicle vehicle, DateTime endDate);
 
-        Task<Auction?> GetAuctionByIdAsync(int id);
+        Task<Auction?> GetAuctionById(Guid id);
 
-        Task<IEnumerable<Auction>> GetAllAuctionsAsync();
+        Task<IEnumerable<Auction>> GetAllAuctions();
 
-        Task<bool> UpdateAuctionAsync(Auction auction);
+        Task<bool> UpdateAuctionState(Auction auction);
+
+        Task<bool> UpdateAuctionBid(Auction auction, double newBid);
     }
 }
