@@ -55,6 +55,11 @@ namespace CarAuction.Controllers
                 return NotFound();
             }
 
+            if(!auction.isActive)
+            {
+                return BadRequest();
+            }
+
             var result = await _auctionRepository.UpdateAuctionActiveState(auction);
             result &= await _vehicleRepository.DeleteVehicleById(auction.CarId);
 
