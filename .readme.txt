@@ -1,0 +1,22 @@
+There are four projects in the solution delivered. 
+One of the projects is related to testing, the other three are related with the development of the API.
+
+I am assuming that once the auction starts, the user can no longer cancel it. When the auction ends, the car will be deleted from the inventory since it is no longer belongs to the inventory.
+
+I have decided to build an API to manage the requests that would come from an application. The API is divided in three parts:
+
+- API
+- Application
+- Contracts
+
+The API layer should concern only about API specific (authentication, authorization, controllers,...).
+The application layer has the business and infrastructure logic and should know nothing about how the API is consumed, meaning it does not have a dependency on it. This also means that we can reuse this code with a UI, Blazor application, etc.
+The contract layers is where we define the contracts. It is useful to have it in a separate layer so it can be used as a package and always be in sync with what the API is exposing.
+
+There are two ways of adding cars to the auction inventory. Initially, four endpoints were developed, one for each car type. So we can use those if we want to create a particular car type. However, I would prefer to only have one endpoint smart enough to understand which car type was being created, so an endpoint was created for it. There are some downsides. One is that in the swagger schema we do not have the "type" because it is not recognized. This is because in the CreateVehicleRequest class, when we use "[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]", we cannot have another "Type" variable. The endpoint also becomes more complex. 
+
+I also added an extension class in the Application layer so I do not inject the repository directly in the Program class in the API layer. It's a good practice since we want to encapsulate the logic in this application layer. For this it was used the DependencyInjections.Abstractions package which only add the abstractions of the dependency injection.
+
+
+There is no physical database in this solution. Lists of objects were created which function like a in-memory fake database. 
+
