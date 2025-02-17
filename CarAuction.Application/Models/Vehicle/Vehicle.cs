@@ -1,5 +1,12 @@
-﻿namespace CarAuction.Models.Vehicle
+﻿using System.Text.Json.Serialization;
+
+namespace CarAuction.Models.Vehicle
 {
+    [JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+    [JsonDerivedType(typeof(Sedan), "sedan")]
+    [JsonDerivedType(typeof(Hatchback), "hatchback")]
+    [JsonDerivedType(typeof(SUV), "suv")]
+    [JsonDerivedType(typeof(Truck), "truck")]
     public class Vehicle
     {
         public required Guid Id { get; init; }

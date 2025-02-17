@@ -15,5 +15,7 @@ namespace CarAuction.Application.Repository
         Task<IEnumerable<Vehicle>> GetVehiclesByYear(int year);
 
         Task<Vehicle?> GetVehiclesById(Guid id);
+
+        Task<bool> DeleteVehicleById(Guid id);
     }
 }

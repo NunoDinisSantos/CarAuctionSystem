@@ -47,8 +47,9 @@ namespace CarAuction.Application.Repository
             return Task.FromResult(auctions);
         }
 
-        public Task<bool> UpdateAuctionState(Auction auction)
+        public Task<bool> UpdateAuctionActiveState(Auction auction)
         {
+            auction.isActive = false;
             _auctions[_auctions.FindIndex(x => x.Id == auction.Id)] = auction;
 
             return Task.FromResult(true);

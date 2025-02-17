@@ -11,7 +11,7 @@ namespace CarAuction.Application.Repository
 
         Task<IEnumerable<Auction>> GetAllAuctions();
 
-        Task<bool> UpdateAuctionState(Auction auction);
+        Task<bool> UpdateAuctionActiveState(Auction auction);
 
         Task<bool> UpdateAuctionBid(Auction auction, double newBid);
     }

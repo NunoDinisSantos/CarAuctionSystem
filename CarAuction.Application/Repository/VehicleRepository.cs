@@ -54,5 +54,13 @@ namespace CarAuction.Application.Repository
             var vehicles = _vehicles.Where(x => x.Year == year).AsEnumerable();
             return Task.FromResult(vehicles);
         }
+
+        public Task<bool> DeleteVehicleById(Guid vehicleId)
+        {
+            var vehicleIndex = _vehicles.FindIndex(x => x.Id == vehicleId);
+            _vehicles.RemoveAt(vehicleIndex);
+
+            return Task.FromResult(!_vehicles.Any(x => x.Id == vehicleId));
+        }
     }
 }

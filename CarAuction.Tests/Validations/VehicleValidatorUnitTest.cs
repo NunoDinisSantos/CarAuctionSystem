@@ -5,7 +5,12 @@ namespace CarAuction.Tests.Validations
 {
     public class VehicleValidatorUnitTest
     {
-        private VehicleValidator _vehicleValidator = new();
+        private readonly VehicleValidator _vehicleValidator;
+
+        public VehicleValidatorUnitTest()
+        {
+            _vehicleValidator = new VehicleValidator();
+        }
 
         [Fact]
         public void CanCreateVehicle_ShouldCreateVehicle_WhenIdIsUnique()

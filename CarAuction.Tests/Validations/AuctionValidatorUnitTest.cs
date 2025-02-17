@@ -5,7 +5,12 @@ namespace CarAuction.Tests.Validations
 {
     public class AuctionValidatorUnitTest
     {
-        private AuctionValidator _auctionValidator = new();
+        private readonly AuctionValidator _auctionValidator;
+
+        public AuctionValidatorUnitTest()
+        {
+            _auctionValidator = new AuctionValidator();
+        }
 
         [Fact]      
         public void AuctionVehicleUnique_ShouldNotCreateAuction_WhenCarAlreadyIsAuctioned()

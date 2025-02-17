@@ -6,7 +6,12 @@ namespace CarAuction.Tests.Mapping
 {
     public class MapCarUnitTest
     {
-        private MapCar _mapCar = new();
+        private readonly MapCar _mapCar;
+
+        public MapCarUnitTest()
+        {
+            _mapCar = new MapCar();
+        }
 
         [Fact]
         public void MapVehicle_ShouldMapToSUV_WhenReceivesSUVRequest()

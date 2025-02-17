@@ -55,10 +55,10 @@ namespace CarAuction.Controllers
                 return NotFound();
             }
 
-            auction.isActive = false;
-            var result = await _auctionRepository.UpdateAuctionState(auction);
+            var result = await _auctionRepository.UpdateAuctionActiveState(auction);
+            result &= await _vehicleRepository.DeleteVehicleById(auction.CarId);
 
-            return Ok();
+            return Ok(result);
         }
 
         [HttpPut($"auctions/bid/{{auctionId:guid}}/{{newBidValue:double}}")]
@@ -78,7 +78,7 @@ namespace CarAuction.Controllers
                 return BadRequest();
             }
 
-            return Ok();
+            return Ok(result);
         }
     }
 }
