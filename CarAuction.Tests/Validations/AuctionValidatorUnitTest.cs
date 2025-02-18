@@ -1,15 +1,21 @@
-﻿using CarAuction.Application.Validations;
+﻿using CarAuction.Application.Repository;
+using CarAuction.Application.Services;
+using CarAuction.Application.Validations;
 using CarAuction.Models.Auction;
+using NSubstitute;
 
 namespace CarAuction.Tests.Validations
 {
     public class AuctionValidatorUnitTest
     {
         private readonly AuctionValidator _auctionValidator;
+        private readonly AuctionService _auctionService;
+        private readonly IAuctionRepository _auctionRepository = Substitute.For<IAuctionRepository>();
 
         public AuctionValidatorUnitTest()
         {
-            _auctionValidator = new AuctionValidator();
+            _auctionValidator = new AuctionValidator(_auctionRepository);
+            _auctionService = new AuctionService(_auctionRepository, _auctionValidator);
         }
 
         [Fact]      
@@ -26,19 +32,7 @@ namespace CarAuction.Tests.Validations
                 isActive = true,
             };
 
-            var fakeDb = new List<Auction>()
-            {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    CarId = usedGuid,
-                    CurrentBid = 18000,
-                    EndDate = DateTime.Now,
-                    isActive = true,
-                }
-            };
-
-            var result = _auctionValidator.AuctionVehicleUnique(auction, fakeDb);
+            var result = _auctionValidator.AuctionVehicleUnique(auction);
 
             Assert.False(result);
         }
@@ -55,19 +49,9 @@ namespace CarAuction.Tests.Validations
                 isActive = true,
             };
 
-            var fakeDb = new List<Auction>()
-            {
-                new()
-                {
-                    Id = Guid.NewGuid(),
-                    CarId = Guid.NewGuid(),
-                    CurrentBid = 18000,
-                    EndDate = DateTime.Now,
-                    isActive = true,
-                }
-            };
+            _auctionRepository.UniqueCarForAuction(Arg.Any<Guid>()).Returns(true);
 
-            var result = _auctionValidator.AuctionVehicleUnique(auction, fakeDb);
+            var result = _auctionValidator.AuctionVehicleUnique(auction);
 
             Assert.True(result);
         }
@@ -120,19 +104,7 @@ namespace CarAuction.Tests.Validations
                 isActive = true,
             };
 
-            var fakeDb = new List<Auction>()
-            {
-                new()
-                {
-                    CarId = Guid.NewGuid(),
-                    Id = usedGuid,
-                    CurrentBid = 18000,
-                    EndDate = DateTime.Now,
-                    isActive = true,
-                }
-            };
-
-            var result = _auctionValidator.AuctionExists(auction, fakeDb);
+            var result = _auctionValidator.AuctionExists(auction);
 
             Assert.False(result);
         }
@@ -149,21 +121,9 @@ namespace CarAuction.Tests.Validations
                 isActive = true,
             };
 
-            var fakeDb = new List<Auction>()
-            {
-                new()
-                {
-                    CarId = Guid.NewGuid(),
-                    Id = Guid.NewGuid(),
-                    CurrentBid = 18000,
-                    EndDate = DateTime.Now,
-                    isActive = true,
-                }
-            };
+            var canCreate = !_auctionValidator.AuctionExists(auction);
 
-            var result = _auctionValidator.AuctionExists(auction, fakeDb);
-
-            Assert.True(result);
+            Assert.True(canCreate);
         }
 
         [Fact]

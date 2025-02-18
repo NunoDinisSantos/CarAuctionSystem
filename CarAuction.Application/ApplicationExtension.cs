@@ -1,4 +1,6 @@
 ﻿using CarAuction.Application.Repository;
+using CarAuction.Application.Services;
+using CarAuction.Application.Validations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CarAuction.Application
@@ -9,6 +11,10 @@ namespace CarAuction.Application
         {
             services.AddSingleton<IAuctionRepository, AuctionRepository>();
             services.AddSingleton<IVehicleRepository, VehicleRepository>();
+            services.AddSingleton<IAuctionService, AuctionService>();
+            services.AddSingleton<IVehicleService, VehicleService>();
+            services.AddSingleton<VehicleValidator>();
+            services.AddSingleton<AuctionValidator>();
             return services;
         }
     }

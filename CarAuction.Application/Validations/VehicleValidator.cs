@@ -1,12 +1,22 @@
-﻿using CarAuction.Models.Vehicle;
+﻿using CarAuction.Application.Repository;
+using CarAuction.Models.Vehicle;
 
 namespace CarAuction.Application.Validations
 {
     public class VehicleValidator
     {
-        public bool CanCreateVehicle(Guid id, List<Vehicle> fakeDb)
+        private readonly IVehicleRepository _vehicleRepository;
+
+        public VehicleValidator(IVehicleRepository vehicleRepository)
         {
-            return !fakeDb.Any(x => x.Id == id);
+            _vehicleRepository = vehicleRepository;
+        }
+
+        public bool CanCreateVehicle(Guid id)
+        {
+            var vehicle = _vehicleRepository.GetVehiclesById(id).Result;          
+
+            return vehicle == null;
         }
 
         public bool ValidVehicleType(Vehicle vehicle)

@@ -1,4 +1,4 @@
-﻿using CarAuction.Application.Repository;
+﻿using CarAuction.Application.Services;
 using CarAuction.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,26 +8,26 @@ namespace CarAuction.Controllers
     [Route("api")]
     public class CarAuctionController : ControllerBase
     {
-        private readonly IAuctionRepository _auctionRepository;
-        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IAuctionService _auctionService;
+        private readonly IVehicleService _vehicleService;
 
-        public CarAuctionController(IAuctionRepository auctionRepository, IVehicleRepository vehicleRepository)
+        public CarAuctionController(IAuctionService auctionService, IVehicleService vehicleService)
         {
-            _auctionRepository = auctionRepository;
-            _vehicleRepository = vehicleRepository;
+            _auctionService = auctionService;
+            _vehicleService = vehicleService;
         }
 
         [HttpPost("auctions")]
         public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionRequest createAuction)
         {
-            var vehicle = _vehicleRepository.GetVehiclesById(createAuction.CarId).Result;
+            var vehicle = _vehicleService.GetVehiclesById(createAuction.CarId).Result;
 
             if (vehicle == null)
             {
                 return NotFound();
             }
 
-            var result = await _auctionRepository.CreateAuction(vehicle, createAuction.EndDate);
+            var result = await _auctionService.CreateAuction(vehicle, createAuction.EndDate);
 
             if(!result)
             {
@@ -40,28 +40,22 @@ namespace CarAuction.Controllers
         [HttpGet("auctions")]
         public async Task<IActionResult> GetAuctions()
         {
-            var result = await _auctionRepository.GetAllAuctions();
+            var result = await _auctionService.GetAllAuctions();
 
             return Ok(result);
         }
 
         [HttpPut($"auctions/close/{{auctionId:guid}}")]
         public async Task<IActionResult> CloseAuction([FromRoute]Guid auctionId)
-        {
-            var auction = await _auctionRepository.GetAuctionById(auctionId);
+        {           
+            var result = await _auctionService.UpdateAuctionActiveState(auctionId);
 
-            if (auction == null)
+            if(result == null)
             {
                 return NotFound();
             }
 
-            if(!auction.isActive)
-            {
-                return BadRequest();
-            }
-
-            var result = await _auctionRepository.UpdateAuctionActiveState(auction);
-            result &= await _vehicleRepository.DeleteVehicleById(auction.CarId);
+            await _vehicleService.DeleteVehicleById(result.CarId);
 
             return Ok(result);
         }
@@ -69,18 +63,11 @@ namespace CarAuction.Controllers
         [HttpPut($"auctions/bid/{{auctionId:guid}}/{{newBidValue:double}}")]
         public async Task<IActionResult> BidAuction([FromRoute] Guid auctionId, [FromRoute] double newBidValue)
         {
-            var auction = await _auctionRepository.GetAuctionById(auctionId);
+            var result = await _auctionService.UpdateAuctionBid(auctionId, newBidValue);
 
-            if (auction == null)
+            if(!result)
             {
                 return NotFound();
-            }
-
-            var result = await _auctionRepository.UpdateAuctionBid(auction, newBidValue);
-
-            if(result == false)
-            {
-                return BadRequest();
             }
 
             return Ok(result);

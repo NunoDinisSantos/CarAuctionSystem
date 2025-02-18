@@ -1,5 +1,4 @@
-﻿using CarAuction.Application.Validations;
-using CarAuction.Models.Vehicle;
+﻿using CarAuction.Models.Vehicle;
 
 namespace CarAuction.Application.Repository
 {
@@ -8,21 +7,11 @@ namespace CarAuction.Application.Repository
         //In memory database
         private readonly List<Vehicle> _vehicles = new();
 
-        private VehicleValidator _vehicleValidator = new();
-
         public Task<bool> CreateVehicle(Vehicle vehicle) 
-        {
-            var validVehicle = _vehicleValidator.CanCreateVehicle(vehicle.Id, _vehicles);
-            validVehicle &= _vehicleValidator.ValidVehicleYear(vehicle.Year);
-            validVehicle &= _vehicleValidator.ValidVehicleType(vehicle);
-            validVehicle &= _vehicleValidator.ValidInitialBid(vehicle.StartingBid);
-
-            if(validVehicle)
-            {
-                _vehicles.Add(vehicle);
-            }
-
-            return Task.FromResult(validVehicle);
+        {            
+            _vehicles.Add(vehicle);
+           
+            return Task.FromResult(true);
         }
 
         public Task<Vehicle?> GetVehiclesById(Guid id)

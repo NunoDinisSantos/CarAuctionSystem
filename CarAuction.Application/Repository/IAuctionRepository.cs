@@ -1,11 +1,10 @@
 ﻿using CarAuction.Models.Auction;
-using CarAuction.Models.Vehicle;
 
 namespace CarAuction.Application.Repository
 {
     public interface IAuctionRepository
     {
-        Task<bool> CreateAuction(Vehicle vehicle, DateTime endDate);
+        Task<bool> CreateAuction(Auction auctionToCreate);
 
         Task<Auction?> GetAuctionById(Guid id);
 
@@ -13,6 +12,10 @@ namespace CarAuction.Application.Repository
 
         Task<bool> UpdateAuctionActiveState(Auction auction);
 
-        Task<bool> UpdateAuctionBid(Auction auction, double newBid);
+        Task<bool> UpdateAuctionBid(Auction auction);
+
+        Task<bool> ExistsById(Guid id);
+
+        Task<bool> UniqueCarForAuction(Guid id);
     }
 }

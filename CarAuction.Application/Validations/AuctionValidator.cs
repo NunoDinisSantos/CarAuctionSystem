@@ -1,17 +1,25 @@
-﻿using CarAuction.Models.Auction;
+﻿using CarAuction.Application.Repository;
+using CarAuction.Models.Auction;
 
 namespace CarAuction.Application.Validations
 {
     public class AuctionValidator
     {
-       public bool AuctionExists(Auction auction, List<Auction> fakeDb)
+        private readonly IAuctionRepository _auctionRepository;
+
+        public AuctionValidator(IAuctionRepository auctionRepository)
         {
-            return !fakeDb.Any(x => x.Id == auction.Id);
+            _auctionRepository = auctionRepository;
         }
 
-        public bool AuctionVehicleUnique(Auction auction, List<Auction> fakeDb)
+        public bool AuctionExists(Auction auction)
         {
-            return !fakeDb.Any(x => x.CarId == auction.CarId);
+            return _auctionRepository.ExistsById(auction.Id).Result;
+        }
+
+        public bool AuctionVehicleUnique(Auction auction)
+        {
+            return _auctionRepository.UniqueCarForAuction(auction.CarId).Result;
         }
 
         public bool AuctionValidDate(Auction auction)
@@ -22,6 +30,11 @@ namespace CarAuction.Application.Validations
         public bool AuctionValidBid(Auction auction, double bid)
         {
             return bid>auction.CurrentBid;
+        }
+
+        public bool AuctionIsOpen(Auction auction)
+        {
+            return _auctionRepository.GetAuctionById(auction.Id).Result!.isActive;
         }
     }
 }

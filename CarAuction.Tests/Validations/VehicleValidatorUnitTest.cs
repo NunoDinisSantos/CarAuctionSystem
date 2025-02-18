@@ -1,15 +1,18 @@
-﻿using CarAuction.Application.Validations;
+﻿using CarAuction.Application.Repository;
+using CarAuction.Application.Validations;
 using CarAuction.Models.Vehicle;
+using NSubstitute;
 
 namespace CarAuction.Tests.Validations
 {
     public class VehicleValidatorUnitTest
     {
         private readonly VehicleValidator _vehicleValidator;
+        private readonly IVehicleRepository _vehicleRepository = Substitute.For<IVehicleRepository>();
 
         public VehicleValidatorUnitTest()
         {
-            _vehicleValidator = new VehicleValidator();
+            _vehicleValidator = new VehicleValidator(_vehicleRepository);
         }
 
         [Fact]
@@ -25,9 +28,7 @@ namespace CarAuction.Tests.Validations
                 Year = 2020
             };
 
-            var fakeDb = new List<Vehicle>();
-
-            var result = _vehicleValidator.CanCreateVehicle(vehicle.Id,fakeDb);
+            var result = _vehicleValidator.CanCreateVehicle(vehicle.Id);
 
             Assert.True(result);
         }
@@ -47,20 +48,9 @@ namespace CarAuction.Tests.Validations
                 Year = 2020
             };
 
-            var fakeDb = new List<Vehicle>()
-            {
-                new Vehicle()
-                {
-                    Id = usedGuid,
-                    StartingBid = 20000,
-                    Model = "Model",
-                    Type = "Type",
-                    Year = 2021,
-                    Manufacturer = "Manufacturer"
-                }
-            };
+            _vehicleRepository.GetVehiclesById(Arg.Any<Guid>()).Returns(vehicle);
                 
-            var result = _vehicleValidator.CanCreateVehicle(vehicle.Id, fakeDb);
+            var result = _vehicleValidator.CanCreateVehicle(vehicle.Id);
 
             Assert.False(result);
         }

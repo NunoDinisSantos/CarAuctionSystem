@@ -1,5 +1,6 @@
 ﻿using CarAuction.Api.Helper;
 using CarAuction.Application.Repository;
+using CarAuction.Application.Services;
 using CarAuction.Contracts.Requests;
 using CarAuction.Contracts.Requests.VehicleTypes;
 using CarAuction.Models.Vehicle;
@@ -11,12 +12,12 @@ namespace CarAuction.Api.Controllers
     [Route("api")] 
     public class VehiclesController : ControllerBase
     {
-        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IVehicleService _vehicleService;
         private readonly IMapCar _retriveCarObject;
 
-        public VehiclesController(IVehicleRepository vehicleRepository, IMapCar retriveCarObject)
+        public VehiclesController(IVehicleService vehicleService, IMapCar retriveCarObject)
         {
-            _vehicleRepository = vehicleRepository;
+            _vehicleService = vehicleService;
             _retriveCarObject = retriveCarObject;
         }
        
@@ -45,7 +46,7 @@ namespace CarAuction.Api.Controllers
                     break;
             }
 
-            var result = _vehicleRepository.CreateVehicle(vehicle).Result;
+            var result = _vehicleService.CreateVehicle(vehicle).Result;
 
             if (!result)
             {
@@ -60,7 +61,7 @@ namespace CarAuction.Api.Controllers
         {          
             var vehicle = _retriveCarObject.MapVehicle(newSuv);
 
-            var result = _vehicleRepository.CreateVehicle(vehicle).Result;
+            var result = _vehicleService.CreateVehicle(vehicle).Result;
 
             if(!result)
             {
@@ -75,7 +76,7 @@ namespace CarAuction.Api.Controllers
         {
             var vehicle = _retriveCarObject.MapVehicle(newTruck);
 
-            var result = _vehicleRepository.CreateVehicle(vehicle).Result;
+            var result = _vehicleService.CreateVehicle(vehicle).Result;
 
             if (!result)
             {
@@ -90,7 +91,7 @@ namespace CarAuction.Api.Controllers
         {
             var vehicle = _retriveCarObject.MapVehicle(newSedan);
 
-            var result = _vehicleRepository.CreateVehicle(vehicle).Result;
+            var result = _vehicleService.CreateVehicle(vehicle).Result;
 
             if (!result)
             {
@@ -105,7 +106,7 @@ namespace CarAuction.Api.Controllers
         {
             var vehicle = _retriveCarObject.MapVehicle(newHatchback);
 
-            var result = _vehicleRepository.CreateVehicle(vehicle).Result;
+            var result = _vehicleService.CreateVehicle(vehicle).Result;
 
             if (!result)
             {
@@ -118,7 +119,7 @@ namespace CarAuction.Api.Controllers
         [HttpGet("carinventory/type/{vehicleType}")]
         public IActionResult GetVehiclesByType([FromRoute] string vehicleType)
         {
-            var result = _vehicleRepository.GetVehiclesByType(vehicleType);
+            var result = _vehicleService.GetVehiclesByType(vehicleType);
 
             return Ok(result);
         }
@@ -126,7 +127,7 @@ namespace CarAuction.Api.Controllers
         [HttpGet("carinventory/manufacturer/{manufacturer}")]
         public IActionResult GetVehiclesByManufacturer([FromRoute] string manufacturer)
         {
-            var result = _vehicleRepository.GetVehiclesByManufacturer(manufacturer);
+            var result = _vehicleService.GetVehiclesByManufacturer(manufacturer);
 
             return Ok(result);
         }
@@ -134,7 +135,7 @@ namespace CarAuction.Api.Controllers
         [HttpGet($"carinventory/year/{{year:int}}")]
         public IActionResult GetVehiclesByYear([FromRoute] int year)
         {
-            var result = _vehicleRepository.GetVehiclesByYear(year);
+            var result = _vehicleService.GetVehiclesByYear(year);
 
             return Ok(result);
         }
@@ -142,7 +143,7 @@ namespace CarAuction.Api.Controllers
         [HttpGet("carinventory/model/{model}")]
         public IActionResult GetVehiclesByModel([FromRoute] string model)
         {
-            var result = _vehicleRepository.GetVehiclesByModel(model);
+            var result = _vehicleService.GetVehiclesByModel(model);
 
             return Ok(result);
         }
@@ -150,7 +151,12 @@ namespace CarAuction.Api.Controllers
         [HttpGet($"carinventory/{{id:guid}}")]
         public IActionResult GetVehiclesById([FromRoute] Guid id)
         {
-            var result = _vehicleRepository.GetVehiclesById(id);
+            var result = _vehicleService.GetVehiclesById(id);
+
+            if(result.Result == null)
+            {
+                return NotFound();
+            }
 
             return Ok(result);
         }

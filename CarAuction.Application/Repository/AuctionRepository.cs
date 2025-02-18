@@ -1,6 +1,4 @@
-﻿using CarAuction.Application.Validations;
-using CarAuction.Models.Auction;
-using CarAuction.Models.Vehicle;
+﻿using CarAuction.Models.Auction;
 
 namespace CarAuction.Application.Repository
 {
@@ -9,29 +7,16 @@ namespace CarAuction.Application.Repository
         // In memory database
         private readonly List<Auction> _auctions = new();
 
-        private AuctionValidator _validator = new();
+        public Task<bool> CreateAuction(Auction auctionToCreate)
+        {          
+            _auctions.Add(auctionToCreate);
+            
+            return Task.FromResult(true);
+        }
 
-        public Task<bool> CreateAuction(Vehicle vehicle, DateTime endDate)
+        public Task<bool> ExistsById(Guid id)
         {
-            var auction = new Auction()
-            {
-                Id = Guid.NewGuid(),
-                CarId = vehicle.Id,
-                CurrentBid = vehicle.StartingBid,
-                EndDate = endDate,
-                isActive = true,
-            };
-
-            var result = _validator.AuctionExists(auction, _auctions);
-            result &= _validator.AuctionValidDate(auction);
-            result &= _validator.AuctionVehicleUnique(auction, _auctions);
-
-            if (result)
-            {
-                _auctions.Add(auction);
-            }
-
-            return Task.FromResult(result);
+            return Task.FromResult(_auctions.Any(x => x.Id == id));
         }
 
         public Task<IEnumerable<Auction>> GetAllAuctions()
@@ -47,26 +32,22 @@ namespace CarAuction.Application.Repository
             return Task.FromResult(auctions);
         }
 
+        public Task<bool> UniqueCarForAuction(Guid id)
+        {
+            return Task.FromResult(!_auctions.Any(x => x.CarId == id));
+        }
+
         public Task<bool> UpdateAuctionActiveState(Auction auction)
         {
-            auction.isActive = false;
             _auctions[_auctions.FindIndex(x => x.Id == auction.Id)] = auction;
 
             return Task.FromResult(true);
         }
 
-        public Task<bool> UpdateAuctionBid(Auction auction, double newBid)
+        public Task<bool> UpdateAuctionBid(Auction auction)
         {
-            var result = _validator.AuctionValidDate(auction);
-            result &= _validator.AuctionValidBid(auction, newBid);
-
-            if (!result)
-            {
-                return Task.FromResult(result);
-            }
-
-            _auctions.FirstOrDefault(x => x.Id == auction.Id)!.CurrentBid = newBid;
-            return Task.FromResult(result);
+            _auctions.FirstOrDefault(x => x.Id == auction.Id)!.CurrentBid = auction.CurrentBid;
+            return Task.FromResult(true);
         }
     }
 }
